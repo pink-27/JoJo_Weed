@@ -14,6 +14,9 @@ jojo = ['jojo', 'i hate you jojo', 'dio', 'giorno', 'joestar', 'mista', 'golden 
 
 jojo_ref=['And that’s why I turned one of your pistols into a banana. It’s your last meal. Take your time… enjoy it.', 'DIO… I don’t understand why you’re so loyal to him. Are you honestly telling me… that you’d die for him?', 'You are such a thoughtful boy, JoJo.', 'A dad should give his son an allowance, right?', 'Hold it! I still have the right to raise… I raise you my mother’s soul.' 'Jojo, being human means having limits. I’ve learned something. The more carefully you scheme, the more unexpected events come along.']
 
+if "responding" not in db.keys():
+  db["responding"]=True
+
 
 def update_jojo_ref(jojo_thing):
   if "jojos" in db.keys():
@@ -42,11 +45,12 @@ async def on_message(message):
         return
     if message.content.startswith('+hello'):
         await message.channel.send('Sup shawty!')
-    options = jojo_ref
-    if "jojos" in db.keys():
-      options.extend(db["jojos"])
-    if any(word in message.content for word in jojo):
-        await message.channel.send(random.choice(options))
+    if db["responding"]:
+      options = jojo_ref
+      if "jojos" in db.keys():
+        options.extend(db["jojos"])
+      if any(word in message.content for word in jojo):
+          await message.channel.send(random.choice(options))
     if message.content.startswith('+newref'):
         jojo_things = message.content.split("+newref ", 1)[1]
         update_jojo_ref(jojo_things) 
@@ -58,6 +62,21 @@ async def on_message(message):
         delete(index)
         jojos = db["jojos"]
         await message.channel.send(jojos)
+    if message.content.startswith('+list'):  
+      jojos = []
+      if "jojos" in db.keys():
+        jojos = db["jojos"]
+      await message.channel.send(f'jojo ref= {jojos.value+jojo_ref}')
+      await message.channel.send(f'jojo triggers= {jojo}')
+    if message.content.startswith('+respond'):
+      response = message.content.split('+respond ', 1)[1]
+      if response.lower()=='true':
+        db["responding"]=True
+        await message.channel.send('now the bot is active')
+      elif response.lower()=='false':
+        db["responding"]=False
+        await message.channel.send('now the bot is shut down')
+      
       
    
 
